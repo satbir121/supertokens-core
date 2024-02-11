@@ -102,7 +102,7 @@ public class Start
         implements SessionSQLStorage, EmailPasswordSQLStorage, EmailVerificationSQLStorage, ThirdPartySQLStorage,
         JWTRecipeSQLStorage, PasswordlessSQLStorage, UserMetadataSQLStorage, UserRolesSQLStorage, UserIdMappingStorage,
         UserIdMappingSQLStorage, MultitenancyStorage, MultitenancySQLStorage, TOTPSQLStorage, ActiveUsersStorage,
-        DashboardSQLStorage, AuthRecipeSQLStorage {
+        DashboardSQLStorage, AuthRecipeSQLStorage, AnomalyDetectionSQLStorage {
 
     private static final Object appenderLock = new Object();
     private static final String APP_ID_KEY_NAME = "app_id";
@@ -1788,6 +1788,24 @@ public class Start
             throws StorageQueryException {
         try {
             return PasswordlessQueries.getCodeByLinkCodeHash(this, tenantIdentifier, linkCodeHash);
+        } catch (SQLException e) {
+            throw new StorageQueryException(e);
+        }
+    }
+
+    @Override
+    public String getLastIPAddress(AppIdentifier appIdentifier, String userId) throws StorageQueryException {
+        try {
+            return AnomalyDetectionQueries.getLastIPAddress(this, appIdentifier, userId);
+        } catch (SQLException e) {
+            throw new StorageQueryException(e);
+        }
+    }
+
+    @Override
+    public String insertNewIPAddress(AppIdentifier appIdentifier, String userId, String newIPAddress) throws StorageQueryException {
+        try {
+            return AnomalyDetectionQueries.insertNewIPAddress(this, appIdentifier, userId, newIPAddress);
         } catch (SQLException e) {
             throw new StorageQueryException(e);
         }
